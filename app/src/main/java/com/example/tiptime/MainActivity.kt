@@ -1,7 +1,11 @@
 package com.example.tiptime
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.example.tiptime.databinding.ActivityMainBinding
 import java.text.NumberFormat
 
@@ -17,11 +21,15 @@ class MainActivity : AppCompatActivity() {
         // Configurar objeto listener cuando se le da CLICK al botón
         // Esto ejecuta la función calculateTip()
         binding.calculateButton.setOnClickListener { calculateTip() }
+
+        // Agrego función para detectar ENTER
+        binding.costOfServiceEditText.setOnKeyListener { view, keyCode, _ -> handleKeyEvent(view, keyCode)}
+
     }
 
     // Función/Metodo para cálculo de propina
     private fun calculateTip() {
-        val stringInTextField = binding.costOfService.text.toString()           // Asigno valor en el EditText a la variable
+        val stringInTextField = binding.costOfServiceEditText.text.toString()           // Asigno valor en el EditText a la variable
         val cost = stringInTextField.toDoubleOrNull()                           // Convierto variable a tipo DOBLE (decimal), o a null si está vacio el campo
         if (cost == null || cost == 0.0) {                                      // Si el costo es null o 0.0
             displayTip(0.0)                                                // se limpia el resultado
@@ -48,6 +56,18 @@ class MainActivity : AppCompatActivity() {
                                                                                 // ubicada en app/values/string.xml -> result_text
                                                                                 // al hacer esto se obvia [android:text="@string/result_text"] en
                                                                                 // activity_main.xml, porque @string/result_text se usa como una plantilla
+    }
+
+    // Para detectar ENTER y ocultar el teclado numérico
+    private fun handleKeyEvent(view: View, keyCode: Int): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            // Hide the keyboard
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            return true
+        }
+        return false
     }
 
 
